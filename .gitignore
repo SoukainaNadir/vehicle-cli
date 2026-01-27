@@ -1,5 +1,7 @@
 # Node
 node_modules/
+npm-debug.log*
+pnpm-debug.log*
 
 # Build
 dist/
@@ -8,6 +10,14 @@ build/
 # IDE
 .vscode/
 
+
 # Environment
 .env
+.env.local
 
+# OS
+.DS_Store
+Thumbs.db
+
+# Lockfiles
+package-lock.json
