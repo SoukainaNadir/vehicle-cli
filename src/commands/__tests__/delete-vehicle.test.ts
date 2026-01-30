@@ -1,46 +1,118 @@
-import { HttpClient } from '../../utils/http-client';
+import { Command } from 'commander';
+import { registerDeleteCommand } from '../delete-vehicle';
+import * as indexModule from '../../index';
+import * as errorHandler from '../../utils/error-handler';
 
-jest.mock('../../utils/http-client');
+jest.mock('../../index', () => ({
+  httpClient: {
+    delete: jest.fn(),
+  },
+}));
+
+jest.mock('../../utils/error-handler', () => ({
+  displayError: jest.fn(),
+}));
 
 describe('delete-vehicle command', () => {
-  let mockHttpClient: jest.Mocked<HttpClient>;
+  let program: Command;
+  let mockExit: jest.SpyInstance;
+  let mockConsoleLog: jest.SpyInstance;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    program = new Command();
     
-    mockHttpClient = new HttpClient('http://localhost:3000') as jest.Mocked<HttpClient>;
+    registerDeleteCommand(program);
+    
+    mockExit = jest.spyOn(process, 'exit').mockImplementation((code?: string | number | null | undefined) => {
+      throw new Error(`process.exit called with code ${code}`);
+    });
+    
+    mockConsoleLog = jest.spyOn(console, 'log').mockImplementation();
+    
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    mockExit.mockRestore();
+    mockConsoleLog.mockRestore();
+  });
+
+  it('should register delete-vehicle command', () => {
+    const command = program.commands.find(cmd => cmd.name() === 'delete-vehicle');
+    
+    expect(command).toBeDefined();
+    expect(command?.description()).toBe('Delete a vehicle by ID');
   });
 
   it('should call DELETE with correct vehicle ID', async () => {
     const vehicleId = '123';
-    mockHttpClient.delete = jest.fn().mockResolvedValue(undefined);
+    const mockDelete = indexModule.httpClient.delete as jest.Mock;
+    mockDelete.mockResolvedValue(undefined);
 
-    await mockHttpClient.delete(`/vehicles/${vehicleId}`);
+    await program.parseAsync(['node', 'test', 'delete-vehicle', '--id', vehicleId]);
 
-    expect(mockHttpClient.delete).toHaveBeenCalledWith(`/vehicles/${vehicleId}`);
-    expect(mockHttpClient.delete).toHaveBeenCalledTimes(1);
+    expect(mockDelete).toHaveBeenCalledWith(`/vehicles/${vehicleId}`);
+    expect(mockDelete).toHaveBeenCalledTimes(1);
+    expect(mockConsoleLog).toHaveBeenCalledWith(`Vehicle ${vehicleId} deleted successfully`);
   });
 
   it('should handle successful deletion', async () => {
-    mockHttpClient.delete = jest.fn().mockResolvedValue(undefined);
+    const mockDelete = indexModule.httpClient.delete as jest.Mock;
+    mockDelete.mockResolvedValue(undefined);
 
-    const result = await mockHttpClient.delete('/vehicles/123');
+    await program.parseAsync(['node', 'test', 'delete-vehicle', '--id', '456']);
 
-    expect(result).toBeUndefined();
-    expect(mockHttpClient.delete).toHaveBeenCalled();
+    expect(mockDelete).toHaveBeenCalledWith('/vehicles/456');
+    expect(mockConsoleLog).toHaveBeenCalledWith('Vehicle 456 deleted successfully');
   });
 
-  it('should handle deletion errors', async () => {
+  it('should handle deletion errors and call displayError', async () => {
     const error = new Error('Vehicle not found');
-    mockHttpClient.delete = jest.fn().mockRejectedValue(error);
+    const mockDelete = indexModule.httpClient.delete as jest.Mock;
+    const mockDisplayError = errorHandler.displayError as jest.Mock;
+    
+    mockDelete.mockRejectedValue(error);
 
-    await expect(mockHttpClient.delete('/vehicles/999')).rejects.toThrow('Vehicle not found');
+    try {
+      await program.parseAsync(['node', 'test', 'delete-vehicle', '--id', '999']);
+    } catch (e) {
+      expect((e as Error).message).toContain('process.exit called with code 1');
+    }
+
+    expect(mockDelete).toHaveBeenCalledWith('/vehicles/999');
+    expect(mockDisplayError).toHaveBeenCalledWith(error);
+    expect(mockExit).toHaveBeenCalledWith(1);
   });
 
   it('should handle network errors', async () => {
     const networkError = new Error('Network error');
-    mockHttpClient.delete = jest.fn().mockRejectedValue(networkError);
+    const mockDelete = indexModule.httpClient.delete as jest.Mock;
+    const mockDisplayError = errorHandler.displayError as jest.Mock;
+    
+    mockDelete.mockRejectedValue(networkError);
 
-    await expect(mockHttpClient.delete('/vehicles/123')).rejects.toThrow('Network error');
+    try {
+      await program.parseAsync(['node', 'test', 'delete-vehicle', '--id', '123']);
+    } catch (e) {
+      expect((e as Error).message).toContain('process.exit called with code 1');
+    }
+
+    expect(mockDisplayError).toHaveBeenCalledWith(networkError);
+    expect(mockExit).toHaveBeenCalledWith(1);
+  });
+
+  it('should require --id option', async () => {
+    await expect(
+      program.parseAsync(['node', 'test', 'delete-vehicle'])
+    ).rejects.toThrow();
+  });
+
+  it('should accept --id with value', async () => {
+    const mockDelete = indexModule.httpClient.delete as jest.Mock;
+    mockDelete.mockResolvedValue(undefined);
+
+    await program.parseAsync(['node', 'test', 'delete-vehicle', '--id', 'abc-123']);
+
+    expect(mockDelete).toHaveBeenCalledWith('/vehicles/abc-123');
   });
 });
