@@ -1,10 +1,10 @@
 import { Command } from 'commander';
 import { HttpClient } from './utils/http-client';
 import { validateUrl } from './utils/error-handler';
+import { registerDeleteCommand } from './commands/delete-vehicle';
 
 const program = new Command();
 
-// CLI configuration
 program
   .name('vehicle-cli')
   .description('CLI tool to manage vehicles via HTTP API')
@@ -13,9 +13,7 @@ program
 
 let httpClient: HttpClient;
 
-/**
- * Initialize HTTP client with validated address
- */
+
 function initializeClient(address: string): HttpClient {
   if (!validateUrl(address)) {
     console.error(`Invalid URL: ${address}`);
@@ -24,18 +22,17 @@ function initializeClient(address: string): HttpClient {
   return new HttpClient(address);
 }
 
-// Hook to initialize client before each command
 program.hook('preAction', (thisCommand) => {
   const options = thisCommand.opts();
   httpClient = initializeClient(options.address);
 });
 
+registerDeleteCommand(program);
+
 program.parse(process.argv);
 
-// Show help if no command provided
 if (!process.argv.slice(2).length) {
   program.outputHelp();
 }
 
-// Export for testing
 export { httpClient, initializeClient };
