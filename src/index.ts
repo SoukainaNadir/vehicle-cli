@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import { HttpClient } from './utils/http-client';
 import { validateUrl } from './utils/error-handler';
 import { registerDeleteCommand } from './commands/delete-vehicle';
+import { registerListCommand } from './commands/list-vehicle';
 
 const program = new Command();
 
@@ -28,6 +29,7 @@ program.hook('preAction', (thisCommand) => {
 });
 
 registerDeleteCommand(program);
+registerListCommand(program)
 
 program.parse(process.argv);
 
