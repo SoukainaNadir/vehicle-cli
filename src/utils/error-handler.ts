@@ -10,12 +10,10 @@ export interface ApiError {
  * Format error messages for CLI output
  */
 export function formatError(error: unknown): ApiError {
-  // Handle Axios errors
   if (axios.isAxiosError(error)) {
     const axiosError = error as AxiosError<Record<string, unknown>>;
     
     if (axiosError.response) {
-      // Server responded with error status
       const responseData = axiosError.response.data;
       const errorMessage = 
         (responseData && typeof responseData === 'object' && 'message' in responseData) 
@@ -28,27 +26,23 @@ export function formatError(error: unknown): ApiError {
         details: axiosError.response.data,
       };
     } else if (axiosError.request) {
-      // Request made but no response
       return {
         message: 'No response from server. Please check if the server is running.',
         details: axiosError.message,
       };
     } else {
-      // Error setting up request
       return {
         message: axiosError.message,
       };
     }
   }
 
-  // Handle generic errors
   if (error instanceof Error) {
     return {
       message: error.message,
     };
   }
 
-  // Unknown error type
   return {
     message: 'An unknown error occurred',
     details: error,
