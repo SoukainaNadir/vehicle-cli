@@ -7,6 +7,9 @@ jest.mock('../utils/error-handler');
 jest.mock('../commands/delete-vehicle', () => ({
     registerDeleteCommand: jest.fn(),
 }));
+jest.mock('../commands/list-vehicle', () => ({
+    registerListCommand: jest.fn(),
+}));
 
 describe('index - CLI entry point', () => {
     let mockExit: jest.SpyInstance;
@@ -21,7 +24,6 @@ describe('index - CLI entry point', () => {
         });
 
         mockConsoleError = jest.spyOn(console, 'error').mockImplementation();
-
         mockValidateUrl = jest.spyOn(errorHandler, 'validateUrl');
     });
 
@@ -147,12 +149,22 @@ describe('index - CLI entry point', () => {
         it('should register delete-vehicle command', () => {
             jest.isolateModules(() => {
                 const { registerDeleteCommand } = require('../commands/delete-vehicle');
-
                 (registerDeleteCommand as jest.Mock).mockClear();
 
                 require('../index');
 
                 expect(registerDeleteCommand).toHaveBeenCalled();
+            });
+        });
+
+        it('should register list-vehicle command', () => {
+            jest.isolateModules(() => {
+                const { registerListCommand } = require('../commands/list-vehicle');
+                (registerListCommand as jest.Mock).mockClear();
+
+                require('../index');
+
+                expect(registerListCommand).toHaveBeenCalled();
             });
         });
     });
