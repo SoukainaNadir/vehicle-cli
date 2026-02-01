@@ -3,6 +3,7 @@ import { HttpClient } from './utils/http-client';
 import { validateUrl } from './utils/error-handler';
 import { registerDeleteCommand } from './commands/delete-vehicle';
 import { registerListCommand } from './commands/list-vehicle';
+import { registerCreateCommand } from './commands/create-vehicle';
 
 const program = new Command();
 
@@ -13,7 +14,6 @@ program
   .option('-a, --address <url>', 'Server address', 'http://localhost:3000');
 
 let httpClient: HttpClient;
-
 
 function initializeClient(address: string): HttpClient {
   if (!validateUrl(address)) {
@@ -29,12 +29,15 @@ program.hook('preAction', (thisCommand) => {
 });
 
 registerDeleteCommand(program);
-registerListCommand(program)
+registerListCommand(program);
+registerCreateCommand(program);
 
-program.parse(process.argv);
+if (require.main === module) {
+  program.parse(process.argv);
 
-if (!process.argv.slice(2).length) {
-  program.outputHelp();
+  if (!process.argv.slice(2).length) {
+    program.outputHelp();
+  }
 }
 
-export { httpClient, initializeClient };
+export { httpClient, initializeClient, program };
