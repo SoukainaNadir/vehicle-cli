@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { HttpClient } from '../http-client';
 
 jest.mock('axios');
@@ -16,7 +16,7 @@ describe('HttpClient', () => {
       post: jest.fn(),
       put: jest.fn(),
       delete: jest.fn(),
-    } as any);
+    } as unknown as AxiosInstance);
 
     httpClient = new HttpClient(baseURL);
   });

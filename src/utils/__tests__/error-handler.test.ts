@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
 import { formatError, validateUrl, displayError } from '../error-handler';
 
 describe('error-handler utilities', () => {
