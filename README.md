@@ -32,6 +32,27 @@
 
 ---
 
+## Table of Contents
+
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+  - [Setting up the Vehicle Server](#setting-up-the-vehicle-server)
+- [Quick Start](#quick-start)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Commands](#commands)
+  - [Command Options](#command-options)
+  - [Global Options](#global-options)
+- [Development](#development)
+  - [Testing](#testing)
+- [CI/CD](#cicd)
+- [API Reference](#api-reference)
+- [Project Structure](#project-structure)
+- [License](#license)
+- [Authors](#authors)
+
+---
+
 ## Features
 
 - Create, list, and delete vehicles
@@ -47,7 +68,6 @@
 ### Setting up the Vehicle Server
 
 The CLI requires a running vehicle API server:
-
 ```bash
 # Clone the vehicle server
 git clone https://github.com/elmehdikaalat/vehicle-server.git
@@ -58,10 +78,10 @@ docker-compose up
 ```
 
 The server will be available at `http://localhost:8080`
+> **Note:** The default CLI server address is `http://localhost:3000`. Use the `-a` flag to specify a different address.
 
 
 ## Quick Start
-
 ```bash
 # Clone and setup
 git clone https://github.com/SoukainaNadir/vehicle-cli.git
@@ -87,8 +107,6 @@ docker run --rm --network host vehicle-cli \
 
 
 ## Installation
-
-
 ```bash
 docker pull ghcr.io/soukainanadir/vehicle-cli:latest
 ```
@@ -99,7 +117,6 @@ docker pull ghcr.io/soukainanadir/vehicle-cli:latest
 ### Commands
 
 #### Create a vehicle
-
 ```bash
 docker run --rm --network host vehicle-cli \
   -a http://localhost:8080 \
@@ -107,7 +124,6 @@ docker run --rm --network host vehicle-cli \
 ```
 
 #### List all vehicles
-
 ```bash
 docker run --rm --network host vehicle-cli \
   -a http://localhost:8080 \
@@ -115,8 +131,6 @@ docker run --rm --network host vehicle-cli \
 ```
 
 #### Delete a vehicle
-
-
 ```bash
 docker run --rm --network host vehicle-cli \
   -a http://localhost:8080 \
@@ -140,6 +154,60 @@ docker run --rm --network host vehicle-cli \
 | `--version, -V` | - | Show version |
 | `--help, -h` | - | Show help |
 
+## Development
+
+### Local Setup
+```bash
+# Install dependencies
+pnpm install
+
+# Build the project
+pnpm run build
+
+# Run in development mode
+pnpm run dev
+```
+
+### Testing
+
+The project uses Jest for unit testing with test coverage.
+
+**Run tests:**
+```bash
+# Run all tests
+pnpm test
+
+# Run tests in watch mode
+pnpm run test:watch
+
+# Generate coverage report
+pnpm run test:coverage
+```
+
+**Test Structure:**
+```
+src/
+├── __tests__/
+│   └── index.test.ts              # Main CLI tests
+├── commands/
+│   └── __tests__/
+│       ├── create-vehicle.test.ts  # Create command tests
+│       ├── list-vehicle.test.ts    # List command tests
+│       └── delete-vehicle.test.ts  # Delete command tests
+└── utils/
+    └── __tests__/
+        ├── http-client.test.ts     # HTTP client tests
+        └── error-handler.test.ts   # Error handling tests
+```
+
+**Code Quality:**
+```bash
+# Run linter
+pnpm run lint
+
+# Fix linting issues
+pnpm run lint:fix
+```
 
 ## CI/CD
 
@@ -210,17 +278,19 @@ The CLI expects the following API endpoints:
 Returns `204 No Content` on success.
 
 ## Project Structure
-
 ```
 vehicle-cli/
 ├── .github/workflows/     # CI/CD pipelines
 ├── src/
 │   ├── commands/          # CLI command implementations
+│   │   ├── __tests__/     # Command tests
 │   │   ├── create-vehicle.ts
 │   │   ├── list-vehicle.ts
 │   │   └── delete-vehicle.ts
 │   ├── types/             # TypeScript interfaces
 │   ├── utils/             # HTTP client and error handling
+│   │   └── __tests__/     # Utility tests
+│   ├── __tests__/         # Main CLI tests
 │   └── index.ts           # CLI entry point
 ├── dist/                  # Compiled JavaScript
 ├── Dockerfile             # Multi-stage Docker build
@@ -265,4 +335,11 @@ ISC License
 
 ---
 
+<div align="center">
+
 **Made with ❤️ and TypeScript**
+
+[![GitHub](https://img.shields.io/badge/GitHub-SoukainaNadir%2Fvehicle--cli-181717?style=for-the-badge&logo=github)](https://github.com/SoukainaNadir/vehicle-cli)
+[![Docker](https://img.shields.io/badge/Docker-ghcr.io-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://ghcr.io/soukainanadir/vehicle-cli)
+
+</div>
