@@ -4,7 +4,7 @@
 
 <div align="center">
 
-![TypeScript](https://img.shields.io/badge/TypeScript-92.8%25-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-82.8%25-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![License](https://img.shields.io/badge/License-ISC-green?style=for-the-badge)
 [![CI](https://img.shields.io/badge/CI-Passing-success?style=for-the-badge&logo=github-actions&logoColor=white)](https://github.com/SoukainaNadir/vehicle-cli/actions)
 
