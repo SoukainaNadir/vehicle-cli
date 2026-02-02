@@ -40,6 +40,26 @@
 - Test coverage
 - Automated CI/CD pipelines
 
+## Prerequisites
+
+- A running vehicle API server
+
+### Setting up the Vehicle Server
+
+The CLI requires a running vehicle API server:
+
+```bash
+# Clone the vehicle server
+git clone https://github.com/elmehdikaalat/vehicle-server.git
+cd vehicle-server
+
+# Start the server with Docker Compose
+docker-compose up
+```
+
+The server will be available at `http://localhost:8080`
+
+
 ## Quick Start
 
 ```bash
@@ -64,25 +84,6 @@ docker run --rm --network host vehicle-cli \
   -a http://localhost:8080 \
   delete-vehicle --id 1
 ```
-
-## Prerequisites
-
-- A running vehicle API server
-
-### Setting up the Vehicle Server
-
-The CLI requires a running vehicle API server:
-
-```bash
-# Clone the vehicle server
-git clone https://github.com/elmehdikaalat/vehicle-server.git
-cd vehicle-server
-
-# Start the server with Docker Compose
-docker-compose up
-```
-
-The server will be available at `http://localhost:8080`
 
 
 ## Installation
