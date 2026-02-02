@@ -8,7 +8,11 @@ export function registerCreateCommand(program: Command): void {
     .command('create-vehicle')
     .description('Create a new vehicle')
     .requiredOption('-s, --shortcode <shortcode>', 'Vehicle shortcode')
-    .requiredOption('-b, --battery <battery>', 'Battery level (0-100)', parseFloat)
+    .requiredOption(
+      '-b, --battery <battery>',
+      'Battery level (0-100)',
+      parseFloat,
+    )
     .requiredOption('--lat <latitude>', 'Latitude position', parseFloat)
     .requiredOption('--lon <longitude>', 'Longitude position', parseFloat)
     .action(async (options) => {
@@ -31,19 +35,20 @@ export function registerCreateCommand(program: Command): void {
         const vehicleData = {
           shortcode: options.shortcode,
           battery: options.battery,
-          position: {
-            latitude: options.lat,
-            longitude: options.lon,
-          },
+          longitude: options.lon,
+          latitude: options.lat,
         };
 
-        const response: Vehicle = await httpClient.post('/vehicles', vehicleData);
+        const response = await httpClient.post<{ vehicle: Vehicle }>('/vehicles', vehicleData);
+        const vehicle = response.vehicle;
 
         console.log('Vehicle created successfully:');
-        console.log(`  ID: ${response.id}`);
-        console.log(`  Shortcode: ${response.shortcode}`);
-        console.log(`  Battery: ${response.battery}%`);
-        console.log(`  Position: ${response.position.latitude}, ${response.position.longitude}`);
+        console.log(`  ID: ${vehicle.id}`);
+        console.log(`  Shortcode: ${vehicle.shortcode}`);
+        console.log(`  Battery: ${vehicle.battery}%`);
+        console.log(
+          `  Position: ${vehicle.position.latitude}, ${vehicle.position.longitude}`,
+        );
       } catch (error) {
         displayError(error);
         process.exit(1);
