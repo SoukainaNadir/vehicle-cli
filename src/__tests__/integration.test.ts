@@ -17,8 +17,9 @@ describe('CLI Integration Tests', () => {
                 expect(stdout).toContain('vehicle-cli');
                 expect(stdout).toContain('Usage:');
                 expect(stdout).toContain('Options:');
-            } catch (error: any) {
-                const output = error.stdout || error.stderr || '';
+            } catch (error) {
+                const execError = error as { stdout: string; stderr: string };
+                const output = execError.stdout || execError.stderr || '';
                 expect(output).toContain('vehicle-cli');
                 expect(output).toContain('Usage:');
                 expect(output).toContain('Options:');
@@ -53,8 +54,9 @@ describe('CLI Integration Tests', () => {
                     `node ${CLI_PATH} --address invalid-url list-vehicle`
                 );
                 fail('Should have thrown');
-            } catch (error: any) {
-                expect(error.stderr || error.stdout).toContain('Invalid URL');
+            } catch (error) {
+                const execError = error as { stdout: string; stderr: string };
+                expect(execError.stderr || execError.stdout).toContain('Invalid URL');
             }
         });
     });
@@ -93,8 +95,9 @@ describe('CLI Integration Tests', () => {
             try {
                 await execAsync(`node ${CLI_PATH} unknown-command`);
                 fail('Should have thrown');
-            } catch (error: any) {
-                expect(error.stderr || error.stdout).toMatch(/unknown command/i);
+            } catch (error) {
+                const execError = error as { stdout: string; stderr: string };
+                expect(execError.stderr || execError.stdout).toMatch(/unknown command/i);
             }
         });
     });
@@ -106,8 +109,9 @@ describe('CLI Integration Tests', () => {
                     `node ${CLI_PATH} create-vehicle --battery 50 --lat 10 --lon 20`
                 );
                 fail('Should have thrown');
-            } catch (error: any) {
-                expect(error.stderr || error.stdout).toMatch(/required option.*shortcode/i);
+            } catch (error) {
+                const execError = error as { stdout: string; stderr: string };
+                expect(execError.stderr || execError.stdout).toMatch(/required option.*shortcode/i);
             }
         });
 
@@ -117,8 +121,9 @@ describe('CLI Integration Tests', () => {
                     `node ${CLI_PATH} create-vehicle --shortcode ABC --lat 10 --lon 20`
                 );
                 fail('Should have thrown');
-            } catch (error: any) {
-                expect(error.stderr || error.stdout).toMatch(/required option.*battery/i);
+            } catch (error) {
+                const execError = error as { stdout: string; stderr: string };
+                expect(execError.stderr || execError.stdout).toMatch(/required option.*battery/i);
             }
         });
 
@@ -126,8 +131,9 @@ describe('CLI Integration Tests', () => {
             try {
                 await execAsync(`node ${CLI_PATH} delete-vehicle`);
                 fail('Should have thrown');
-            } catch (error: any) {
-                expect(error.stderr || error.stdout).toMatch(/required option.*id/i);
+            } catch (error) {
+                const execError = error as { stdout: string; stderr: string };
+                expect(execError.stderr || execError.stdout).toMatch(/required option.*id/i);
             }
         });
     });

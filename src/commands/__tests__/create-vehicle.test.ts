@@ -2,7 +2,6 @@ import { Command } from 'commander';
 import { registerCreateCommand } from '../create-vehicle';
 import * as indexModule from '../../index';
 import * as errorHandler from '../../utils/error-handler';
-import { Vehicle } from '../../types/vehicle';
 
 jest.mock('../../index', () => ({
   httpClient: {
@@ -47,14 +46,16 @@ describe('create-vehicle command', () => {
   });
 
   it('should create vehicle with valid data', async () => {
-    const mockVehicle: Vehicle = {
-      id: 1,
-      shortcode: 'ABC123',
-      battery: 75,
-      position: { latitude: 48.8566, longitude: 2.3522 },
+    const mockResponse = {
+      vehicle: {
+        id: 1,
+        shortcode: 'ABC123',
+        battery: 75,
+        position: { latitude: 48.8566, longitude: 2.3522 },
+      },
     };
 
-    (indexModule.httpClient.post as jest.Mock).mockResolvedValue(mockVehicle);
+    (indexModule.httpClient.post as jest.Mock).mockResolvedValue(mockResponse);
 
     await program.parseAsync([
       'node',
@@ -69,16 +70,15 @@ describe('create-vehicle command', () => {
     expect(indexModule.httpClient.post).toHaveBeenCalledWith('/vehicles', {
       shortcode: 'ABC123',
       battery: 75,
-      position: {
-        latitude: 48.8566,
-        longitude: 2.3522,
-      },
+      latitude: 48.8566,
+      longitude: 2.3522,
     });
 
     expect(mockConsoleLog).toHaveBeenCalledWith('Vehicle created successfully:');
     expect(mockConsoleLog).toHaveBeenCalledWith('  ID: 1');
     expect(mockConsoleLog).toHaveBeenCalledWith('  Shortcode: ABC123');
     expect(mockConsoleLog).toHaveBeenCalledWith('  Battery: 75%');
+    expect(mockConsoleLog).toHaveBeenCalledWith('  Position: 48.8566, 2.3522');
   });
 
   it('should reject battery level below 0', async () => {
@@ -183,14 +183,16 @@ describe('create-vehicle command', () => {
   });
 
   it('should accept valid coordinates at boundaries', async () => {
-    const mockVehicle: Vehicle = {
-      id: 2,
-      shortcode: 'EDGE',
-      battery: 0,
-      position: { latitude: -90, longitude: -180 },
+    const mockResponse = {
+      vehicle: {
+        id: 2,
+        shortcode: 'EDGE',
+        battery: 0,
+        position: { latitude: -90, longitude: -180 },
+      },
     };
 
-    (indexModule.httpClient.post as jest.Mock).mockResolvedValue(mockVehicle);
+    (indexModule.httpClient.post as jest.Mock).mockResolvedValue(mockResponse);
 
     await program.parseAsync([
       'node',
@@ -205,10 +207,8 @@ describe('create-vehicle command', () => {
     expect(indexModule.httpClient.post).toHaveBeenCalledWith('/vehicles', {
       shortcode: 'EDGE',
       battery: 0,
-      position: {
-        latitude: -90,
-        longitude: -180,
-      },
+      latitude: -90,
+      longitude: -180,
     });
   });
 });
